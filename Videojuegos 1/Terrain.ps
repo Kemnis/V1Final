@@ -1,0 +1,78 @@
+Texture2D shaderTexture[3];
+SamplerState SampleType;
+
+cbuffer MaterialBuffer : register(b1)
+{
+	float4 materialColor;
+	float escalar;
+	float padding1;
+	float padding2;
+	float padding3;
+};
+
+cbuffer LightBuffer : register(b2)
+{
+    float4 ambientColor;
+	float4 diffuseColor;
+	float3 lightDirection;
+	float padding;
+};
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+	float2 tex : TEXCOORD0;
+	float3 normal : NORMAL;
+};
+
+float4 PixelProgram(PixelInputType input) : SV_TARGET
+{
+	float4 color;
+	float4 textureColor;
+	color = ambientColor;
+	float4 texture_1 = shaderTexture[0].Sample(SampleType, input.tex.xy);
+	float4 texture_2 = shaderTexture[1].Sample(SampleType, input.tex.xy);
+	float4 texture_3 = shaderTexture[2].Sample(SampleType, input.tex.xy);
+	// Calculate the slope of this point.
+    float slope = input.normal.y;
+	float4 blendAmount;
+
+	// Determine which texture to use based on height.
+
+	if(slope < 0.1f)
+	{
+		textureColor = texture_1;
+	}
+	//Second texture
+    if((slope < 0.2) && (slope >= 0.1f))
+    {
+        blendAmount = (slope - 0.1f) * (1.0f / (0.2f - 0.1f));
+        textureColor = lerp(texture_1, float4(texture_2), blendAmount);
+    }
+	
+
+    if((slope < 0.5f) && (slope >= 0.2)) 
+    {
+       
+		blendAmount = (slope - 0.2f) * (1.0f / (0.5f - 0.2f));
+        textureColor = lerp(texture_2, float4(texture_3), blendAmount);
+    }
+
+	if(slope >= 0.5f)
+	{
+		textureColor = texture_3;
+	}
+
+
+	// Invert the light direction for calculations.
+    //lightDir = -lightDirection;
+
+	
+    // Calculate the amount of light on this pixel.
+	//lightIntensity = saturate(dot(texture_1, lightDir));
+	//color = saturate(resultColor*lightIntensity);
+
+	textureColor = lerp(textureColor,textureColor*materialColor,escalar);
+
+    return textureColor;
+}

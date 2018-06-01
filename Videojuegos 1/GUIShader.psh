@@ -1,0 +1,48 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: texture.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+/////////////
+Texture2D shaderTexture;
+SamplerState SampleType;
+
+cbuffer MaterialBuffer : register(b1)
+{
+	float4 materialColor;
+	float escalar;
+	float padding;
+	float padding1;
+	float padding2;
+};
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+struct PixelInputType
+{
+	float4 position : SV_POSITION;
+	float2 tex : TEXCOORD0;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+float4 PixelProgram(PixelInputType input) : SV_TARGET
+{
+float4 textureColor;
+float4 color;
+// Sample the pixel color from the texture using the sampler at this texture coordinate location.
+textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+// Remove bacground
+clip(textureColor.a - 0.7f);
+
+color = lerp(textureColor, textureColor*materialColor, escalar);
+
+return color;
+}

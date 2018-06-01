@@ -1,2 +1,4 @@
-# V1Final
-VI
+Proyecto de V1
+=================
+
+Informacion adicional....
