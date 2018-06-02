@@ -34,6 +34,7 @@ public:
 	bool ExistShader();
 	Material* GetMaterial();
 	void Draw(XMMATRIX world, XMMATRIX view, XMMATRIX projection);
+	void Draw(XMMATRIX world, XMMATRIX view, XMMATRIX projection, XMMATRIX reflection);
 	void DrawPatrol(XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
 	void Collider(GameObject*gameObject, double deltaTime, Camera3D *SceneCamera);
 	void PrecalculatePositions();
@@ -80,6 +81,18 @@ protected:
 	bool ColsionAnimation;
 	bool Damage = false;
 
+	//Variables Water Plane
+	XMFLOAT3 cameraPosition;
+	XMFLOAT2 normalMapTiling;
+	float waterTranslation;
+	float reflectRefractScale;
+	XMFLOAT4 refractionTint;
+	//Hardcore light
+	XMFLOAT3 lightDirection;
+	float specularShininess;
+
+	float colorTextureBrightness;
+	XMFLOAT4 clipPlane;
 private:
 
 	

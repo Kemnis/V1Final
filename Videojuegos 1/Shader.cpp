@@ -1,6 +1,12 @@
 #include "Shader.h"
 #include "stdafx.h"
 
+Shader::Shader()
+{
+	VertexShader = 0;
+	PixelShader = 0;
+	Layout = 0;
+}
 
 Shader::Shader(ShaderType type)
 {
@@ -164,6 +170,31 @@ bool Shader::SetShaderParameters(XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMA
 
 	ConstantBufferTypes::MatrixBuffer tempBuffer{};
 	tempBuffer.projectionViewWorld = projectionViewWorldMatrix;
+
+	this->SetShaderConstantBuffer("MatrixBuffer", &tempBuffer);
+
+	return true;
+}
+
+bool Shader::SetShaderParametersWater(XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, XMMATRIX reflectionMatrix)
+{
+	ConstantBufferTypes::MatrixBufferReflection tempBuffer{};
+	tempBuffer.world = XMMatrixTranspose(worldMatrix);
+	tempBuffer.view = XMMatrixTranspose(viewMatrix);
+	tempBuffer.projection = XMMatrixTranspose(projectionMatrix);
+	tempBuffer.reflection = XMMatrixTranspose(reflectionMatrix);
+
+	this->SetShaderConstantBuffer("MatrixBuffer", &tempBuffer);
+
+	return true;
+}
+
+bool Shader::SetShaderParametersDefualt(XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+{
+	ConstantBufferTypes::MatrixBufferDefault tempBuffer{};
+	tempBuffer.world = XMMatrixTranspose(worldMatrix);
+	tempBuffer.view = XMMatrixTranspose(viewMatrix);
+	tempBuffer.projection = XMMatrixTranspose(projectionMatrix);
 
 	this->SetShaderConstantBuffer("MatrixBuffer", &tempBuffer);
 

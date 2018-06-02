@@ -2,6 +2,7 @@
 #include "Vertex.h"
 #include "Transforms.h"
 #include "RawImage.h"
+#include "Water.h"
 
 class Model : DxComponent<Model>
 {
@@ -12,6 +13,7 @@ public:
 	Model(vec2 coordPositivo, vec2 coordNegativo);//<-Width and Height my Billboard
 	Model(vec4 rectBitmap, int widthScreen, int heightScreen);//Mesh for Bitmap images in 2D screens
 	Model(string Oracion, int widthScreen, int heightScreen);//Construct Words
+	Model(string typeName, float height, float radius);//Water
 	~Model();
 	bool Initialize(string primitive);
 	void Draw();
@@ -44,6 +46,7 @@ protected:
 	bool dynamicVertexBuffer;//<- For re-position bitmap2D
 	Vertex Mesh;
 	ID3D11Buffer *VertexBuffer, *IndexBuffer;
+	Water*m_water;
 	
 private:
 	bool LoadModel(string);
@@ -54,6 +57,7 @@ private:
 	void DefineSphere(float diameter, size_t tessellation);
 	void DefineGeoSphere(float diameter, size_t tessellation);
 	void DefineBillboard();
+	void DefineWater();
 	void InitCol(string MeshCol);
 	void ConstructAWord(string Oracion, int widthScreen, int heightScreen);
 	void DefineBitmap(vec4 rectBitmap, int widthScreen, int heightScreen);
@@ -71,6 +75,7 @@ private:
 	
 	vec3 Max, Min;
 	double radio;
+	float height_water, radius_water;
 };
 
 
