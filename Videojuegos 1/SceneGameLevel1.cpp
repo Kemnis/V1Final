@@ -28,6 +28,7 @@ string SceneGameLevel1::CreateScene()
 //Load all objects you need 
 string SceneGameLevel1::LoadResources()
 {
+	Shader*temp = 0;
 	Totalbillboards = 10;
 	rangeYBillboards = vec2(80, 250);
 	rangeXBillboards = vec2(100, 700);
@@ -58,6 +59,9 @@ string SceneGameLevel1::LoadResources()
 	RB = ResourceManager::AddMaterial(id, "ColorBlanco", vec4(0.2, 0.2, 0.4,1.0));
 
 	RB = ResourceManager::AddLight(id, "Luz", vec4(0.1f, 0.8f, 0.8f, 1.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f));
+	
+	//Shaders
+	
 	RB = ResourceManager::AddShader(id, "LambertMaterialShader", new MaterialShader("LambertTexture.vs", "LambertTexture.ps"));
 	RB = ResourceManager::AddShader(id, "LambertLMaterialShader", new MaterialShader("LambertLTexture.vs", "LambertLTexture.ps", 1));
 
@@ -68,6 +72,7 @@ string SceneGameLevel1::LoadResources()
 
  	RB = ResourceManager::AddShader(id, "SkydomeShader", new SkydomeShader("Skydome.vs", "Skydome.ps", 1));
 	RB = ResourceManager::AddShader(id, "TerrenoShader", new TerrainShader("Terrain.vs", "Terrain.ps"));
+
 	//texture Bitmaps
 	RB = ResourceManager::AddTexture(id, "assets/LifeIco.png", "TextureCorazon");
 	RB = ResourceManager::AddTexture(id, "assets/LifesIco.png", "TextureVidas");

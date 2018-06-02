@@ -60,6 +60,14 @@ Model::Model(string Palabra, int widthScreen, int heightScreen) {
 	Initialize(Type);
 }
 
+Model::Model(string typeName, float height, float radius) {
+
+	Type = typeName;
+	height_water = height;
+	radius_water = radius;
+	Initialize(Type);
+}
+
 Model::~Model()
 {
 }
@@ -738,6 +746,16 @@ void Model::DefineBitmap(vec4 rectBitmap, int widthScreen, int heightScreen){
 	Mesh.DoFinalMesh();
 }
 
+void Model::DefineWater() {
+
+	m_water = new Water();
+	
+	if (!m_water)
+		return;
+	m_water->Initialize(specsDx->GetDevice(),specsDx->GetDeviceContext(),VertexBuffer,IndexBuffer,height_water,radius_water);
+
+}
+
 bool Model::UpdateBufferBitmap(vec4 rectBitmap, int widthScreen, int heightScreen)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -893,13 +911,14 @@ bool Model::Initialize(string NameOfFigure)
 	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 	HRESULT result;
-
+	// Values defualt
 	m_previousWidth = -1;
 	m_previousHeight = -1;
 	m_previousPosX = -1;
 	m_previousPosY = -1;
 	m_screenWidth = 800;
 	m_screenHeight = 600;
+	m_water = NULL;
 
 	if (NameOfFigure == "Triangle")
 		DefineTriangle();
@@ -915,6 +934,8 @@ bool Model::Initialize(string NameOfFigure)
 		DefineBillboard();
 	if (NameOfFigure == "SphereCollider")
 		DefineSphere(2, 4);
+	if(NameOfFigure == "Water")
+
 
 	if (radio == 0)
 		radio = 1;
@@ -1216,6 +1237,13 @@ void Model::ShutdownModel()
 	}
 
 	Mesh.ClearVertex();
+
+	if (m_water)
+	{
+		m_water->Shutdown();
+		delete m_water;
+		m_water = NULL;
+	}
 
 	return;
 }

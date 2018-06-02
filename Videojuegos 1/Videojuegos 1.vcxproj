@@ -167,6 +167,7 @@
     <ClInclude Include="MaterialShader.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="RawImage.h" />
+    <ClInclude Include="ReflectionShader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
@@ -183,6 +184,8 @@
     <ClInclude Include="Transforms.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="Water.h" />
+    <ClInclude Include="WaterShader.h" />
     <ClInclude Include="WICTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +205,7 @@
     <ClCompile Include="MaterialShader.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="RawImage.cpp" />
+    <ClCompile Include="ReflectionShader.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="BasicShader.cpp" />
@@ -221,6 +225,8 @@
     <ClCompile Include="Transforms.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="Water.cpp" />
+    <ClCompile Include="WaterShader.cpp" />
     <ClCompile Include="WICTextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>

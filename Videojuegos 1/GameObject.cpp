@@ -146,10 +146,11 @@ void GameObject::Draw(XMMATRIX world, XMMATRIX view, XMMATRIX projection)
 	if (shader != nullptr) {
 
 		ResourceManager::bindShader(shader);
-		shader->SetShaderParameters(world, view, projection);
+
 		switch (shader->type) {
 		case ShaderType::MaterialLShader:
 		case ShaderType::BasicLShader:
+			shader->SetShaderParameters(world, view, projection);
 			if (this->light != nullptr) {
 				ConstantBufferTypes::LightBuffer lightBuffer;
 				lightBuffer.ambientColor = vec4(this->light->Ambient);
@@ -160,6 +161,7 @@ void GameObject::Draw(XMMATRIX world, XMMATRIX view, XMMATRIX projection)
 		case ShaderType::MaterialShader:
 		case ShaderType::SkydomeShader:
 		case ShaderType::BasicShader: {
+			shader->SetShaderParameters(world, view, projection);
 			if (this->material != nullptr) {
 				ConstantBufferTypes::MaterialBuffer materialBuffer;
 				materialBuffer.ColorMaterial = this->material->color;
@@ -169,6 +171,7 @@ void GameObject::Draw(XMMATRIX world, XMMATRIX view, XMMATRIX projection)
 		}break;
 		case ShaderType::TerrainShader:
 		{
+			shader->SetShaderParameters(world, view, projection);
 			if (this->light != nullptr)
 			{
 				ConstantBufferTypes::LightBuffer lightBuffer;
@@ -186,6 +189,7 @@ void GameObject::Draw(XMMATRIX world, XMMATRIX view, XMMATRIX projection)
 		}break;
 		case ShaderType::GUIShader:
 		{
+			shader->SetShaderParameters(world, view, projection);
 			//Check update bitmap
 			Modelo->UpdateBitmap();
 
@@ -196,6 +200,21 @@ void GameObject::Draw(XMMATRIX world, XMMATRIX view, XMMATRIX projection)
 				shader->SetShaderConstantBuffer("MaterialBuffer", &materialBuffer);
 			}
 		}break;
+		case ShaderType::ReflectionShader:
+		{
+			shader->SetShaderParametersDefualt(world, view, projection);
+
+			ConstantBufferTypes::ClipPlaneBufferType clipPlaneBuffer;
+			clipPlaneBuffer.clipPlane = clipPlane;
+			shader->SetShaderConstantBuffer("ClipPlaneBuffer", &clipPlane);
+
+			ConstantBufferTypes::LightBufferType lightBuffer;
+			lightBuffer.colorTextureBrightness = colorTextureBrightness;
+			lightBuffer.lightDiffuseColor = XMFLOAT4(this->light->Diffuse.x, this->light->Diffuse.y, this->light->Diffuse.z, this->light->Diffuse.w);
+			lightBuffer.lightDirection = XMFLOAT3(this->light->Direction.x, this->light->Direction.y, this->light->Direction.z);
+			shader->SetShaderConstantBuffer("LightBuffer", &lightBuffer);
+
+		} break;
 		};
 	}
 
@@ -205,6 +224,113 @@ void GameObject::Draw(XMMATRIX world, XMMATRIX view, XMMATRIX projection)
 	ResourceManager::bindModel(Modelo);
 	Modelo->Draw();
 }
+
+
+void GameObject::Draw(XMMATRIX world, XMMATRIX view, XMMATRIX projection, XMMATRIX reflection)
+{
+	if (shader != nullptr) {
+
+		ResourceManager::bindShader(shader);
+		
+		switch (shader->type) {
+		case ShaderType::MaterialLShader:
+		case ShaderType::BasicLShader:
+			shader->SetShaderParameters(world, view, projection);
+			if (this->light != nullptr) {
+				ConstantBufferTypes::LightBuffer lightBuffer;
+				lightBuffer.ambientColor = vec4(this->light->Ambient);
+				lightBuffer.diffuseColor = vec4(this->light->Diffuse);
+				lightBuffer.lightDirection = vec3(this->light->Direction);
+				shader->SetShaderConstantBuffer("LightBuffer", &lightBuffer);
+			}
+		case ShaderType::MaterialShader:
+		case ShaderType::SkydomeShader:
+		case ShaderType::BasicShader: {
+			shader->SetShaderParameters(world, view, projection);
+			if (this->material != nullptr) {
+				ConstantBufferTypes::MaterialBuffer materialBuffer;
+				materialBuffer.ColorMaterial = this->material->color;
+				materialBuffer.escalar = this->material->escalar;
+				shader->SetShaderConstantBuffer("MaterialBuffer", &materialBuffer);
+			}
+		}break;
+		case ShaderType::TerrainShader:
+		{
+			shader->SetShaderParameters(world, view, projection);
+			if (this->light != nullptr)
+			{
+				ConstantBufferTypes::LightBuffer lightBuffer;
+				lightBuffer.ambientColor = vec4(this->light->Ambient);
+				lightBuffer.diffuseColor = vec4(this->light->Diffuse);
+				lightBuffer.lightDirection = vec3(this->light->Direction);
+				shader->SetShaderConstantBuffer("LightBuffer", &lightBuffer);
+			}
+			if (this->material != nullptr) {
+				ConstantBufferTypes::MaterialBuffer materialBuffer;
+				materialBuffer.ColorMaterial = this->material->color;
+				materialBuffer.escalar = this->material->escalar;
+				shader->SetShaderConstantBuffer("MaterialBuffer", &materialBuffer);
+			}
+		}break;
+		case ShaderType::GUIShader:
+		{
+			shader->SetShaderParameters(world, view, projection);
+			//Check update bitmap
+			Modelo->UpdateBitmap();
+
+			if (this->material != nullptr) {
+				ConstantBufferTypes::MaterialBuffer materialBuffer;
+				materialBuffer.ColorMaterial = this->material->color;
+				materialBuffer.escalar = this->material->escalar;
+				shader->SetShaderConstantBuffer("MaterialBuffer", &materialBuffer);
+			}
+		}break;
+		case ShaderType::WaterShader:
+		{
+			shader->SetShaderParametersWater(world, view, projection,reflection);
+
+			ConstantBufferTypes::CamNormBufferType CamNormBuffer;
+			CamNormBuffer.cameraPosition = cameraPosition;
+			CamNormBuffer.normalMapTiling = normalMapTiling;
+			shader->SetShaderConstantBuffer("CamNormBuffer", &CamNormBuffer);
+
+			ConstantBufferTypes::WaterBufferType WaterBuffer;
+			WaterBuffer.lightDirection = lightDirection;
+			WaterBuffer.reflectRefractScale = reflectRefractScale;
+			WaterBuffer.refractionTint = refractionTint;
+			WaterBuffer.waterTranslation = waterTranslation;
+			WaterBuffer.specularShininess = specularShininess;
+			shader->SetShaderConstantBuffer("WaterBuffer", &WaterBuffer);
+
+		} break;
+		case ShaderType::ReflectionShader:
+		{
+			shader->SetShaderParametersDefualt(world, view, projection);
+
+			ConstantBufferTypes::ClipPlaneBufferType clipPlaneBuffer;
+			clipPlaneBuffer.clipPlane = clipPlane;
+			shader->SetShaderConstantBuffer("ClipPlaneBuffer", &clipPlane);
+
+			ConstantBufferTypes::LightBufferType lightBuffer;
+			lightBuffer.colorTextureBrightness = colorTextureBrightness;
+			lightBuffer.lightDiffuseColor = XMFLOAT4(this->light->Diffuse.x, this->light->Diffuse.y, this->light->Diffuse.z, this->light->Diffuse.w);
+			lightBuffer.lightDirection = XMFLOAT3(this->light->Direction.x, this->light->Direction.y, this->light->Direction.z);
+			shader->SetShaderConstantBuffer("LightBuffer",&lightBuffer);
+
+		} break;
+		};
+	}
+
+	for (int i = 0; i < Tex.size(); i++) {
+		Tex[i]->BindTexture(i);
+	}
+
+	ResourceManager::bindModel(Modelo);
+	Modelo->Draw();
+}
+
+
+
 
 void GameObject::Collider(double deltaTime) {
 	//static float time = 0;
